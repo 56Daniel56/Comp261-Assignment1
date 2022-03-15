@@ -69,6 +69,7 @@ public class Parser {
 			String line;
 			// read in each line of the file
             while ((line = br.readLine()) != null) {
+              
                 // tokenise the line by splitting it at ",".
                 String[] tokens = line.split("[,]");
                 if (tokens.length >= 4) {
@@ -81,10 +82,13 @@ public class Parser {
                     // Decide how to store the trip data
 
                     //need to work out how to get the from stop and the tostop
-                    stops.add(stopId);
+                    
+                    //stops.add(stopId);
                     if(!trips.containsKey(stopPatternId) ){
-                    trips.put(stopPatternId, stops);
+                        trips.put(stopPatternId, stops = new ArrayList<String>());
                     }
+                    stops.add(stopId);
+                   
 
                 }
             }

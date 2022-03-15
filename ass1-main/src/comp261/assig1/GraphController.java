@@ -127,7 +127,10 @@ public class GraphController {
     public void handleUp(ActionEvent event) {
         System.out.println("Move up event " + event.getEventType()); 
  // Todo: move up
-        mapOrigin = mapOrigin.add(moveDistance/scale, 0);
+        //meed to work out correct values for movement
+        Point2D test = model2Screen(mapOrigin).add(0, moveDistance/scale);
+        mapOrigin = getScreen2Model(test);
+        System.out.println(mapOrigin);
         drawGraph();
         event.consume();  
     }
@@ -216,31 +219,46 @@ Drawing the graph on the canvas
         gc.clearRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
 
         // Todo:  store node list so we can use nodes to find edge end points.
-        
+        ArrayList <Stop> stopList = graph.getStopList();
         // Todo: use the nodes form the data in graph to draw the graph
         // probably use something like this
-            Point2D screenPoint = model2Screen(stop.getPoint());
-            drawCircle(screenPoint.getX(), screenPoint.getY(), size);
 
+        for (Stop stop : stopList){
+            //draw nodes here some how
+            int size = stopSize;
+            Point2D screenPoint = model2Screen(stop.getLoc());
+            drawCircle(screenPoint.getX(), screenPoint.getY(), size);
+        }
         //draw edges
-        graph.//Todo: use the edge form the data in graph to draw the graph
-            gc.setStroke(Color.BLACK);
-            gc.setLineWidth(1);
-            
-            //Todo: step through the edges and draw them with something like
-                    Point2D startPoint = model2Screen(fromStop.getPoint());
-                    Point2D endPoint = model2Screen(toStop.getPoint());
-                    drawLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+        for(Trip t : graph.getTripList()){
+            for(Edge e : t.getEdges()){
+                gc.setStroke(Color.BLACK);
+                gc.setLineWidth(1);
                 
+                //Todo: step through the edges and draw them with something like
+                        Point2D startPoint = model2Screen(e.getFrom().getLoc());
+                        Point2D endPoint = model2Screen(e.getToStop().getLoc());
+                        drawLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+   
+            }
+        
+        }
     }
 
 
     private void drawTrip(Trip trip, GraphicsContext gc, Color color) {
+
         gc.setStroke(color);
         gc.setLineWidth(2);
+        Graph graph = Main.graph;
 //Todo: step through a trip to highlight it in a different colour
-                Point2D startPoint = model2Screen(fromStop.getPoint());
-                Point2D endPoint = model2Screen(toStop.getPoint());
-                drawLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+        for(Trip t : graph.getTripList()){
+            
+            Point2D startPoint = model2Screen(t.getStart().getLoc());
+            Point2D endPoint = model2Screen(t.getEnd().getLoc());
+            drawLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+        }
+
+}
 
 }

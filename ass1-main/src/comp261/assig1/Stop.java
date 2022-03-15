@@ -1,5 +1,5 @@
 package comp261.assig1;
-
+import javafx.geometry.Point2D;
 import java.util.ArrayList;
 
 
@@ -32,6 +32,7 @@ public class Stop {
         public String getId(){
             return id;
         }
+
 
     // add getters and setters etc
         
