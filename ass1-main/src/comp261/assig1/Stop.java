@@ -21,6 +21,10 @@ public class Stop {
             this.id = id;
         }
 
+        public String toString(){
+            return id + ": " + name + " at ( " + loc + ")";
+        }
+
         public GisPoint getLoc(){
             return loc;
         }

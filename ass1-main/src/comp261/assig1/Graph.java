@@ -55,28 +55,28 @@ public class Graph {
         int count = 0;
         int countTo = 0;
         for (String trip : tripData.keySet()) {     //for each trip in the set of trips included in the file
-            ArrayList<String> stopList = tripData.get(trip);    //get each list of ids of stops
-            for(int i = 0; i<stopList.size()-1;  i++){          //loop through every stop and stop 1 before the end
+            ArrayList<String> stopListID = tripData.get(trip);    //get each list of ids of stops
+            for(int i = 0; i<stopListID.size()-1;  i++){          //loop through every stop and stop 1 before the end
                 countTo++;                                              //-1 since you are starting at zero
                 if(i == 0){
-                    start = stops.get(stopList.get(i));
+                    start = stops.get(stopListID.get(i));
                 }
-                else if (i >= stopList.size()-1){   // for the last time it goes round the loop
-                    end = stops.get(stopList.get(i+1));
+                else if (i >= stopListID.size()-1){   // for the last time it goes round the loop
+                    end = stops.get(stopListID.get(i+1));
                 }
                 
-                Stop fromStop = stops.get(stopList.get(i));
-                Stop toStop = stops.get(stopList.get(i+1));
+                Stop fromStop = stops.get(stopListID.get(i));
+                Stop toStop = stops.get(stopListID.get(i+1));
 
                 if(fromStop == null){
-                    if(stops.get(stopList.get(i-1)) != null){   // if the location its going from == null then refer to the previous stop and map from there
-                        fromStop = stops.get(stopList.get(i-1));
+                    if(stops.get(stopListID.get(i-1)) != null){   // if the location its going from == null then refer to the previous stop and map from there
+                        fromStop = stops.get(stopListID.get(i-1));
                     }
                     continue;
                 }
                 if(toStop == null){
-                    if(i != stopList.size()-2 && stops.get(stopList.get(i+2)) != null){    // if the next stop == null then check the next stop in the list if there is another stop and put it to that one
-                        toStop = stops.get(stopList.get(i+2));
+                    if(i != stopListID.size()-2 && stops.get(stopListID.get(i+2)) != null){    // if the next stop == null then check the next stop in the list if there is another stop and put it to that one
+                        toStop = stops.get(stopListID.get(i+2));
                     }
                     else{
                         continue;
@@ -84,7 +84,7 @@ public class Graph {
                 }
                 edges.add(new Edge(fromStop, toStop, trip));    
             }
-            trips.add(new Trip(trip, edges, start, end));
+            trips.add(new Trip(trip, edges, start, end, stopListID));
         }
         //trip is a  list of edges
 

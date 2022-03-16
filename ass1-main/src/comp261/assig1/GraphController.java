@@ -220,8 +220,22 @@ public class GraphController {
         if(closestStop != null){
             highlightNodes.clear();
             highlightNodes.add(closestStop);
-            System.out.println(closestStop.getName()); //also check whether should be printed on gui or on system output
+            nodeDisplay.setText(closestStop.toString());
             //print all trips that go through the stop 
+            ArrayList <Trip> tripList = graph.getTripList();
+            tripText.clear();
+            for (Trip trip : tripList){
+                ArrayList <String> stopList_Trip = trip.getStops();
+                for(String s : stopList_Trip){
+                    if(s.equals(closestStop.getId())){
+                        tripText.appendText("Trip_id: "+trip.getId()+" stops: "+ trip.getStops() +"\n");
+                    }
+               }
+
+            }
+
+
+
             // I could grab the entrie trip list from graph.java then if stop is contained in the list
             // of  edges of that trip then print out the trip
             drawGraph();
@@ -236,7 +250,7 @@ public class GraphController {
         
 
 
-        
+
 //Todo: find closest stop and work out how to highlight it
 //Todo: Work out highlighting the trips through this node
 
