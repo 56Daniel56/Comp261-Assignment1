@@ -128,8 +128,8 @@ public class GraphController {
         System.out.println("Move up event " + event.getEventType()); 
  // Todo: move up
         //meed to work out correct values for movement
-        Point2D test = model2Screen(mapOrigin).add(0, moveDistance/scale);
-        mapOrigin = getScreen2Model(test);
+        Point2D pixelLocal = model2Screen(mapOrigin).add(0, moveDistance/zoomFactor);    
+        mapOrigin = getScreen2Model(pixelLocal);                                    
         System.out.println(mapOrigin);
         drawGraph();
         event.consume();  
@@ -138,21 +138,30 @@ public class GraphController {
     public void handleDown(ActionEvent event) {
         System.out.println("Move Down event " + event.getEventType()); 
 // Todo: move down
-
+        Point2D pixelLocal = model2Screen(mapOrigin).subtract(0, moveDistance/zoomFactor);
+        mapOrigin = getScreen2Model(pixelLocal);
+        System.out.println(mapOrigin);
+        drawGraph();
         event.consume();  
     }
 
     public void handleLeft(ActionEvent event) {
         System.out.println("Move Left event " + event.getEventType()); 
 // Todo: move left
-
+        Point2D pixelLocal = model2Screen(mapOrigin).add(moveDistance/zoomFactor, 0);
+        mapOrigin = getScreen2Model(pixelLocal);
+        System.out.println(mapOrigin);
+        drawGraph();
         event.consume();  
     }
 
     public void handleRight(ActionEvent event) {
         System.out.println("Move Right event " + event.getEventType()); 
 // Todo: move right
-
+        Point2D pixelLocal = model2Screen(mapOrigin).subtract(moveDistance/zoomFactor, 0);
+        mapOrigin = getScreen2Model(pixelLocal);
+        System.out.println(mapOrigin);
+        drawGraph();
         event.consume();  
     }
 
@@ -180,15 +189,54 @@ public class GraphController {
         System.out.println("Mouse click event " + event.getEventType());
 // Todo: find node closed to mouse click
 // event.getX(), event.getY() are the mouse coordinates
-       
+        Graph graph = Main.graph;
+        
+        Stop closestStop = null;
+        //get the mouse coordinates
+        double mouseX = event.getX();
+        double mouseY = event.getY();
+        
+
+        //grab gislocation - convert mouse from 2d
+        //Point2D mouseLocal = new Point2D(mouseX, mouseY); // converts mouse x y into point2d so can convert to long lat
+
+        ArrayList <Stop> stopList = graph.getStopList();
+        
+        double closest = Integer.MAX_VALUE;
+        for(Stop stop : stopList){
+            GisPoint currentStop = stop.getLoc();
+            Point2D stopLocal = model2Screen(currentStop);
+            double stopX = stopLocal.getX();
+            double stopY = stopLocal.getY();
+            double subX = stopX-mouseX;
+            double subY = stopY-mouseY;
+            double difference = Math.sqrt((subX*subX)+(subY*subY));
+            
+            if(difference < closest){
+                closest = difference;
+                closestStop = stop;
+            }
+        }
+        if(closestStop != null){
+            highlightNodes.clear();
+            highlightNodes.add(closestStop);
+            System.out.println(closestStop.getName()); //also check whether should be printed on gui or on system output
+            //print all trips that go through the stop 
+            // I could grab the entrie trip list from graph.java then if stop is contained in the list
+            // of  edges of that trip then print out the trip
+            drawGraph();
+        }
+
         event.consume();
     }
 
 
     //find the Closest stop to the lon,lat postion
     public void highlightClosestStop(double lon, double lat) {
-        double minDist = Double.MAX_VALUE;
-        Stop closestStop = null;
+        
+
+
+        
 //Todo: find closest stop and work out how to highlight it
 //Todo: Work out highlighting the trips through this node
 
@@ -226,6 +274,15 @@ Drawing the graph on the canvas
         for (Stop stop : stopList){
             //draw nodes here some how
             int size = stopSize;
+
+            if(highlightNodes.contains(stop)){
+                gc.setFill(Color.RED);
+                size = stopSize*2;
+            }
+            else{
+                gc.setFill(Color.BLUE);
+            }
+
             Point2D screenPoint = model2Screen(stop.getLoc());
             drawCircle(screenPoint.getX(), screenPoint.getY(), size);
         }
