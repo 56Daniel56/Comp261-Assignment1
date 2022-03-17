@@ -1,21 +1,31 @@
 package comp261.assig1;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Trip {
     private String stop_pattern_id;
     private ArrayList<Edge> pointToPoint;
-    private ArrayList<String> stopList;
     private Stop start;
     private Stop end;
+    private HashMap<String, Stop> stopMap;
 
-    public Trip(String stop_pattern_id, ArrayList<Edge> pointToPoint, Stop start, Stop end, ArrayList<String> stopList){
+    public Trip(String stop_pattern_id, ArrayList<Edge> pointToPoint, Stop start, Stop end,  HashMap<String, Stop> stopMap){
         this.stop_pattern_id = stop_pattern_id;
         this.pointToPoint = pointToPoint;
         this.start = start;
         this.end = end;
-        this.stopList = stopList;
+        this.stopMap = stopMap;
     }
+
+    public HashMap <String, Stop> getStopMap(){
+        return stopMap;
+    }
+
     public ArrayList <String> getStops(){
+        ArrayList <String> stopList = new ArrayList<>();
+        for(String s : stopMap.keySet()){
+            stopList.add(s);
+        }
         return stopList;
     }
 

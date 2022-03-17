@@ -46,18 +46,32 @@ public class Graph {
 
     }
 
+    private HashMap <String, Stop> makeTripMap(ArrayList<String> stopIdList){
+        HashMap <String, Stop> stopMap = new HashMap<>();
+        for(int i = 0; i<stopIdList.size(); i++){
+            Stop currentStop = stops.get(stopIdList.get(i));
+            if(currentStop == null){
+                continue;
+            }
+            stopMap.put(stopIdList.get(i), currentStop);
+
+        }        
+        return stopMap;
+    }
+
     // buildTripData into stops
     private void buildTripData(){
         // Todo: this could be used for trips
-        ArrayList <Edge> edges = new ArrayList<>();
+        
         Stop start = null;
         Stop end = null;
-        int count = 0;
-        int countTo = 0;
         for (String trip : tripData.keySet()) {     //for each trip in the set of trips included in the file
             ArrayList<String> stopListID = tripData.get(trip);    //get each list of ids of stops
-            for(int i = 0; i<stopListID.size()-1;  i++){          //loop through every stop and stop 1 before the end
-                countTo++;                                              //-1 since you are starting at zero
+            ArrayList <Edge> edges = new ArrayList<>();
+
+
+            for(int i = 0; i<stopListID.size()-1;  i++){          //loop through every stop and stop 1 before the end                                         //-1 since you are starting at zero
+
                 if(i == 0){
                     start = stops.get(stopListID.get(i));
                 }
@@ -72,7 +86,9 @@ public class Graph {
                     if(stops.get(stopListID.get(i-1)) != null){   // if the location its going from == null then refer to the previous stop and map from there
                         fromStop = stops.get(stopListID.get(i-1));
                     }
-                    continue;
+                    else{
+                        continue;
+                    }
                 }
                 if(toStop == null){
                     if(i != stopListID.size()-2 && stops.get(stopListID.get(i+2)) != null){    // if the next stop == null then check the next stop in the list if there is another stop and put it to that one
@@ -84,7 +100,10 @@ public class Graph {
                 }
                 edges.add(new Edge(fromStop, toStop, trip));    
             }
-            trips.add(new Trip(trip, edges, start, end, stopListID));
+
+            HashMap tripMap = makeTripMap(stopListID);
+
+            trips.add(new Trip(trip, edges, start, end, tripMap));
         }
         //trip is a  list of edges
 
@@ -100,8 +119,6 @@ public class Graph {
     public ArrayList<Stop> getStopList(){
         return stopList;
     }
-
-
 
 
  

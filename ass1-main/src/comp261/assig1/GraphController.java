@@ -16,6 +16,7 @@ import javafx.scene.canvas.GraphicsContext;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javafx.event.*;
 
@@ -43,6 +44,7 @@ public class GraphController {
     private static double zoomFactor = 1.1; // zoom in/out factor
 
     private ArrayList<Stop> highlightNodes = new ArrayList<Stop>();
+    private ArrayList<Edge> highlightEdges = new ArrayList<Edge>();
 
     // map model to screen using scale and origin
     private Point2D model2Screen (GisPoint modelPoint) {
@@ -170,7 +172,40 @@ public class GraphController {
         String search = searchText.getText();
  // Todo: figure out how to add searching and by text
  // This is were a Trie would be used potentially
-        
+        highlightNodes.clear();
+        highlightEdges.clear();
+        tripText.clear();
+        Stop searchedStop = null;
+        for(Stop stop : Main.graph.getStopList()){
+            if(search.length() > 0 && stop.getName().toLowerCase().equals(search.toLowerCase())){
+                searchedStop = stop;
+                highlightNodes.add(stop);
+                nodeDisplay.setText(stop.toString());
+            }
+        }
+        if(searchedStop != null){   //COME FIX THIS LATER   
+            ArrayList <Trip> tripList = Main.graph.getTripList();
+            for (Trip trip : tripList){
+                HashMap <String, Stop> stopMap = trip.getStopMap();
+                for(Stop s : stopMap.values()){
+                    if(s.getId().equals(searchedStop.getId())){
+                        for(Stop stopHighlight : stopMap.values()){
+                            highlightNodes.add(stopHighlight);
+                        }
+                        ArrayList<Edge> edgeList = trip.getEdges();
+
+                        for(Edge edgeHighlight : edgeList){
+                           highlightEdges.add(edgeHighlight);
+                        }
+
+
+                        break;
+                    }
+               }
+            }
+        }
+
+        drawGraph();
         event.consume();  
     }  
 
@@ -179,6 +214,8 @@ public class GraphController {
         String search = searchText.getText();
 // Todo: figure out how to add searching and by text after each keypress
 // This is were a Trie would be used potentially
+
+
         event.consume();  
     }  
 
@@ -225,19 +262,14 @@ public class GraphController {
             ArrayList <Trip> tripList = graph.getTripList();
             tripText.clear();
             for (Trip trip : tripList){
-                ArrayList <String> stopList_Trip = trip.getStops();
-                for(String s : stopList_Trip){
+                HashMap<String, Stop> stopMap = trip.getStopMap();
+                for(String s : stopMap.keySet()){
                     if(s.equals(closestStop.getId())){
                         tripText.appendText("Trip_id: "+trip.getId()+" stops: "+ trip.getStops() +"\n");
                     }
                }
 
             }
-
-
-
-            // I could grab the entrie trip list from graph.java then if stop is contained in the list
-            // of  edges of that trip then print out the trip
             drawGraph();
         }
 
@@ -263,6 +295,7 @@ Drawing the graph on the canvas
 */
     public void drawCircle(double x, double y, int radius) {
         GraphicsContext gc = mapCanvas.getGraphicsContext2D();
+
         gc.fillOval(x-radius/2, y-radius/2, radius, radius);
     }
 
@@ -303,9 +336,17 @@ Drawing the graph on the canvas
         //draw edges
         for(Trip t : graph.getTripList()){
             for(Edge e : t.getEdges()){
-                gc.setStroke(Color.BLACK);
-                gc.setLineWidth(1);
                 
+                
+                if(highlightEdges.contains(e)){
+                    gc.setStroke(Color.YELLOW);
+                    gc.setLineWidth(2);
+                }
+                else{
+                    gc.setStroke(Color.BLACK);
+                    gc.setLineWidth(1);
+                }
+
                 //Todo: step through the edges and draw them with something like
                         Point2D startPoint = model2Screen(e.getFrom().getLoc());
                         Point2D endPoint = model2Screen(e.getToStop().getLoc());
